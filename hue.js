@@ -1,8 +1,7 @@
 /**
  * Philips Hue Smart LED helper, exposed as an AMD module.
  * Dependencies:
- *		- RequireJS (or another compatible AMD loader providing define(...) and require(...))
- * 		- jQuery 1.8.3 (see RequireJS documentation: http://requirejs.org/docs/jquery.html)
+ * 		- jQuery 1.8.3
  *		- color.js (packaged alongside this file)
  */
 define(["../jquery", "./color"], function($, colors) {
@@ -21,7 +20,7 @@ define(["../jquery", "./color"], function($, colors) {
 		baseUrl = 'http://<bridge IP address>/api', // use your Hue bridge's IP address here
 		baseApiUrl = baseUrl + '/' + apiKey,
 		lastResult = null,
-		numberOfLamps = 3, // set to the # of lamps included in the starter kit
+		numberOfLamps = 3, // set to the # of lamps included in the starter kit, update if you've connected additional bulbs
 		offState = '{"on": false}',
 		onState = '{"on": true}',
 		shortFlashType = 'select',
@@ -87,6 +86,11 @@ define(["../jquery", "./color"], function($, colors) {
 		putJSON(buildStateURL(lampIndex), callback, data);
 	};
 	
+	var putGroupAction = function(groupIndex /* {Number} */, action /* String */) {
+		var callback = apiSuccess;
+		putJSON(buildGroupActionURL(groupIndex), callback, action);
+	};
+	
 	/**
 	 *	Convenience function used to initiate HTTP PUT requests to modify state
 	 *	of all connected Hue lamps.
@@ -111,6 +115,10 @@ define(["../jquery", "./color"], function($, colors) {
 	 */
 	var buildStateURL = function(lampIndex /* Number */) {
 		return baseApiUrl + '/lights/' + lampIndex + '/state';
+	};
+	
+	var buildGroupActionURL = function(groupIndex /* {Number} */) {
+		return baseApiUrl + '/groups/' + groupIndex + '/action';
 	};
 	
 	/** 
@@ -175,6 +183,7 @@ define(["../jquery", "./color"], function($, colors) {
 		 */
 		setAllColors: function(color /* String */) {
 			var state = getXYStateString(colors.getCIEColor(color));
+			// putGroupAction(0, state); // not as fluid as a simple for loop. setting group state seems to react slower than lamp-by-lamp.
 			putAll(state);
 		},
 		/**
@@ -197,13 +206,15 @@ define(["../jquery", "./color"], function($, colors) {
 		 *	Turn off all connected lamps.
 		 */
 		turnOffAll: function() {
-			putAll(offState);
+			putGroupAction(0, offState);
+			//putAll(offState);
 		},
 		/** 
 		 *	Turn on all connected lamps.
 		 */
 		turnOnAll: function() {
-			putAll(onState);
+			putGroupAction(0, onState);
+			//putAll(onState);
 		},
 		/** 
 		 *	Return the json data from the last HTTP request to the Hue bridge.

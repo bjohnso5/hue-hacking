@@ -9,18 +9,15 @@ define(function () {
 	////
 	
 	var hexToRed = function (hex) {
-		return parseInt(
-			hex.substring(0, 2), 16);
+		return parseInt( hex.substring(0, 2), 16 );
 	};
 	
 	var hexToGreen = function (hex) {
-		return parseInt(
-			hex.substring(2, 4), 16);
+		return parseInt( hex.substring(2, 4), 16 );
 	};
 	
 	var hexToBlue = function (hex) {
-		return parseInt(
-			hex.substring(4, 6), 16);
+		return parseInt( hex.substring(4, 6), 16 );
 	};
 	
 	var hexToRGB = function (h) {
@@ -29,10 +26,29 @@ define(function () {
 	};
 	
 	/**
+	 *	Translate initial RGB value in the 0-255 range to a
+	 *	usable CIE 1931 equivalent.
+	 *	Algorithm from: 
+ 	 *		http://www.easyrgb.com/index.php?X=MATH&H=02#text2
+	 *
+	 *	@param {Number} Value in the 0-255 RGB color range.
+ 	 */
+	var translateRGBValue = function(rgbValue /* Number */) {
+		rgbValue = rgbValue / 255.0;
+		if (rgbValue > 0.04045) {
+			rgbValue = ((rgbValue + 0.055) / 1.055);
+			rgbValue = Math.pow(rgbValue, 2.4);
+		} else {
+			rgbValue = rgbValue / 12.92;
+		}
+		return rgbValue;
+	};
+	
+	/**
 	 *	Generates a random number between 'from' and 'to'.
 	 *
-	 *	@param from Number representing the start of a range.
-	 *	@param to Number representing the end of a range.
+	 *	@param {Number} Number representing the start of a range.
+	 *	@param {Number} Number representing the end of a range.
 	 */
 	var randomFromInterval = function(from /* Number */, to /* Number */) {
 		return Math.floor(Math.random() * (to - from + 1) + from);
@@ -43,8 +59,8 @@ define(function () {
 		 *	Converts hexadecimal colors represented as a String to approximate
 		 *	CIE 1931 coordinates. May not produce accurate values.
 		 *
-		 *	@param h String value representing a hexadecimal color value
-		 *	@return Array<Number> Approximate CIE 1931 x,y coordinates.
+		 *	@param {String} Value representing a hexadecimal color value
+		 *	@return {Array{Number}} Approximate CIE 1931 x,y coordinates.
 		 */
 		hexToCIE1931 : function (h) {
 			var rgb = hexToRGB(h);
@@ -56,38 +72,17 @@ define(function () {
 		 *	http://www.easyrgb.com/index.php?X=MATH&H=02#text2. May not produce
 		 *	accurate values.
 		 *
-		 *	@param red Integer in the 0-255 range.
-		 *	@param green Integer in the 0-255 range.
-		 *	@param blue Integer in the 0-255 range.
-		 *	@return Array<Number> Approximate CIE 1931 x,y coordinates.
+		 *	@param {Number} red Integer in the 0-255 range.
+		 *	@param {Number} green Integer in the 0-255 range.
+		 *	@param {Number} blue Integer in the 0-255 range.
+		 *	@return {Array{Number}} Approximate CIE 1931 x,y coordinates.
 		 */
 		rgbToCIE1931 : function (red, green, blue) {
 			var x,
 				y,
-				r = red / 255.0,
-				g = green / 255.0,
-				b = blue / 255.0;
-			
-			if (r > 0.04045) {
-				r = ((r + 0.055) / 1.055);
-				r = Math.pow(r, 2.4);
-			} else {
-				r = r / 12.92;
-			}
-			
-			if (g > 0.04045) {
-				g = ((g + 0.055) / 1.055);
-				g = Math.pow(g, 2.4);
-			} else {
-				g = g / 12.92;
-			}
-			
-			if (b > 0.04045) {
-				b = ((b + 0.055) / 1.055);
-				b = Math.pow(b, 2.4);
-			} else {
-				b = b / 12.92;
-			}
+				r = translateRGBValue(red),
+				g = translateRGBValue(green),
+				b = translateRGBValue(blue);
 			
 			x = r * 0.4124 + g * 0.3576 + b * 0.1805;
 			y = r * 0.2126 + g * 0.7152 + b * 0.0722;
@@ -99,8 +94,8 @@ define(function () {
 		 *	supplied hexColor parameter, or of a random color if the parameter
 		 * 	is not passed.
 		 *
-		 *	@param hexColor String representing a hexidecimal color value.
-		 *	@return Array<Number> Approximate CIE 1931 x,y coordinates.
+		 *	@param {String} hexColor String representing a hexidecimal color value.
+		 *	@return {Array{Number}} Approximate CIE 1931 x,y coordinates.
 		 */
 		getCIEColor : function (hexColor /* String */) {
 			var hex = hexColor || null;
