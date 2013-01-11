@@ -4,7 +4,7 @@
  * 		- jQuery 1.8.3
  *		- color.js (packaged alongside this file)
  */
-define(["../jquery", "./color"], function($, colors) {
+var hue = function($, colors) { 
 	
 	/**
 	 *	1. MD5 hash used for the initial authentication connection should be set 
@@ -33,6 +33,10 @@ define(["../jquery", "./color"], function($, colors) {
 	 *	Sets the response to the lastResult member for use.
 	 *	TODO: Flesh out success/failure callback mechanism to make it actually
 	 *	useful.
+	 *
+	 *	@param {String} Response data as a String
+	 *	@param {String} Status text
+	 *	@param {jqXHR}	jQuery XmlHttpResponse object
 	 */
 	var apiSuccess = function(data, successText, jqXHR) {
 		lastResult = data;
@@ -42,9 +46,9 @@ define(["../jquery", "./color"], function($, colors) {
 	 *	Convenience function to perform an asynchronous HTTP PUT with the
 	 *	provided JSON data.
 	 *
-	 *	@param url The URL to send the PUT request to.
-	 *	@param callback The function to invoke on a successful response.
-	 *	@param data The JSON data as a String.
+	 *	@param {String} url The URL to send the PUT request to.
+	 *	@param {function} callback The function to invoke on a successful response.
+	 *	@param {Object} data The JSON data.
 	 */
 	var putJSON = function(url, callback, data) {
 		var config = {
@@ -53,7 +57,7 @@ define(["../jquery", "./color"], function($, colors) {
 			success: callback,
 			dataType: 'json',
 			contentType: 'application/json',
-			data: data
+			data: JSON.stringify(data)
 		};
 		$.ajax(config);
 	};
@@ -62,8 +66,8 @@ define(["../jquery", "./color"], function($, colors) {
 	 *	Convenience function used to query the state of a Hue lamp or other
 	 *	bridge-administered resource.
 	 *
-	 *	@param destination URL to send HTTP GET request to.
-	 *	@param success Callback function to invoke on successful response.
+	 *	@param {String} destination URL to send HTTP GET request to.
+	 *	@param {function} success Callback function to invoke on successful response.
 	 */
 	var get = function(destination, success) {
 		var callback = success || null;
@@ -75,10 +79,9 @@ define(["../jquery", "./color"], function($, colors) {
 	 *	Convenience function used to initiate an HTTP PUT request to modify 
 	 *	state.
 	 *
-	 *	@param lampIndex 1-based index of the Hue lamp to modify.
-	 *	@param data String containing the JSON state object to commit to the 
-	 *	lamp.
-	 *	@param success Callback function to invoke on successful response.
+	 *	@param {number} lampIndex 1-based index of the Hue lamp to modify.
+	 *	@param {String} data String containing the JSON state object to commit to the lamp.
+	 *	@param {function} success Callback function to invoke on successful response.
 	 */
 	var put = function(lampIndex, data, success) {
 		var callback = success || null;
@@ -86,6 +89,12 @@ define(["../jquery", "./color"], function($, colors) {
 		putJSON(buildStateURL(lampIndex), callback, data);
 	};
 	
+	/**
+	 *	Convenience function used to initiate an HTTP PUT request to modify state of a group of lamps.
+	 *
+	 *	@param {number} Index of the lamp group to modify
+	 *	@param {Object} Object containing desired lamp state
+	 */
 	var putGroupAction = function(groupIndex /* {Number} */, action /* String */) {
 		var callback = apiSuccess;
 		putJSON(buildGroupActionURL(groupIndex), callback, action);
@@ -122,17 +131,24 @@ define(["../jquery", "./color"], function($, colors) {
 	};
 	
 	/** 
-	 *	Builds a JSON state string for the CIE 1931 color coordinates provided.
+	 *	Builds a JSON state object for the CIE 1931 color coordinates provided.
 	 *	If the transitionTime property has been set, it is also included in the
-	 *	JSON string.
+	 *	JSON object.
+	 *
+	 *	@param {Array{number}} CIE 1931 X,Y color coordinates.
 	 */
-	var getXYStateString = function(xyCoords /* Array<Number> */) {
-		var state = '{"xy": [' + xyCoords[0] + ',' + xyCoords[1] + ']';
+	var getXYState = function(xyCoords /* Array<Number> */) {
+		var stateObj = {};
+		stateObj.xy = xyCoords;
+		
+		//var state = '{"xy": [' + xyCoords[0] + ',' + xyCoords[1] + ']';
 		if(typeof(transitionTime) === 'number' ) {
-			state += ', "transitiontime":' + transitionTime;
+			//state += ', "transitiontime":' + transitionTime;
+			stateObj.transitiontime = transitionTime;
 		}
-		state += '}';
-		return state;
+		//state += '}';
+		
+		return stateObj;
 	};
 	
 	return {
@@ -172,7 +188,7 @@ define(["../jquery", "./color"], function($, colors) {
 		 *	@param color String representing a hexadecimal color value.
 		 */
 		setColor: function(lampIndex /* Number */, color /* String */) {
-			var state = getXYStateString(colors.getCIEColor(color));
+			var state = getXYState(colors.getCIEColor(color));
 			put(lampIndex, state);
 		},
 		/**
@@ -182,7 +198,7 @@ define(["../jquery", "./color"], function($, colors) {
 		 *	@param color String representing a hexadecimal color value.
 		 */
 		setAllColors: function(color /* String */) {
-			var state = getXYStateString(colors.getCIEColor(color));
+			var state = getXYState(colors.getCIEColor(color));
 			// putGroupAction(0, state); // not as fluid as a simple for loop. setting group state seems to react slower than lamp-by-lamp.
 			putAll(state);
 		},
@@ -242,4 +258,11 @@ define(["../jquery", "./color"], function($, colors) {
 			transitionTime = time;
 		}
 	};
-});
+};
+
+if(typeof(define) !== 'undefined' && typeof(define.amd) !== 'undefined') {
+	define(["../jquery", "./colors"], hue);
+} else {
+	// window.colors is defined by the color.js file; if AMD is not used, it must be included BEFORE hue.js
+	window.hue = hue(window.jQuery, window.colors);
+}
