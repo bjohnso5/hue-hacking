@@ -1,7 +1,8 @@
 /**
- * 	Color utility functions, exposed as an AMD module.
- *	No external dependencies.
- */
+ * Color utility functions, exposed as an AMD module; No external dependencies.
+ * https://github.com/bjohnso5/hue-hacking
+ * Copyright (c) 2013 Bryan Johnson; Licensed MIT */
+ 
 var colors = function () {
 	
 	////

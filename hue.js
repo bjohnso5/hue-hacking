@@ -3,7 +3,9 @@
  * Dependencies:
  * 		- jQuery 1.8.3
  *		- color.js (packaged alongside this file)
- */
+ * https://github.com/bjohnso5/hue-hacking
+ * Copyright (c) 2013 Bryan Johnson; Licensed MIT */
+ 
 var hue = function($, colors) { 
 	
 	/**
