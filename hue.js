@@ -24,7 +24,7 @@ var hue = function($, colors) {
 		baseUrl = 'http://<bridge IP address>/api', // use your Hue bridge's IP address here
 		baseApiUrl = baseUrl + '/' + apiKey,
 		lastResult = null,
-		numberOfLamps = 3, // set to the # of lamps included in the starter kit, update if you've connected additional bulbs
+		numberOfLamps = 3, // defaulted to the # of lamps included in the starter kit, update if you've connected additional bulbs
 		offState = { on: false },
 		onState = { on: true },
 		shortFlashType = 'select',
@@ -217,8 +217,7 @@ var hue = function($, colors) {
 		 */
 		setAllColors: function(color /* String */) {
 			var state = getXYState(colors.getCIEColor(color));
-			putGroupAction(0, state); // not as fluid as a simple for loop. setting group state seems to react slower than lamp-by-lamp.
-			//putAll(state);
+			putGroupAction(0, state);
 		},
 		/**
 		 * Turn off the lamp at lampIndex.
@@ -241,14 +240,12 @@ var hue = function($, colors) {
 		 */
 		turnOffAll: function() {
 			putGroupAction(0, offState);
-			//putAll(offState);
 		},
 		/** 
 		 * Turn on all connected lamps.
 		 */
 		turnOnAll: function() {
 			putGroupAction(0, onState);
-			//putAll(onState);
 		},
 		/**
 		 * Set the brightness of the lamp at lampIndex.
@@ -268,7 +265,6 @@ var hue = function($, colors) {
 		setAllBrightness: function(brightness /* number */) {
 			var state = getBrightnessState(brightness);
 			putGroupAction(0, state);
-			//putAll(state);
 		},
 		/**
 		 * Set the brightness of an indexed group of lamps.
