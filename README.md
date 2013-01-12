@@ -22,7 +22,6 @@ meethue.com control panel, https://www.meethue.com/en-US/user/preferencessmartbr
 5. __Optional:__ If you have more than 3 bulbs (the number included in the Hue starter kit), update the value of the ```` numberOfLamps ```` variable in hue.js to match your bulb count.
 
 ## Included Files ##
-***
 
 ### colors.js ###
 Provides convenience functions to convert between CSS-style hex color values, their corresponding RGB color values, and the CIE 1931 X,Y color coordinates supported by the Hue lamp system.
@@ -30,5 +29,7 @@ Provides convenience functions to convert between CSS-style hex color values, th
 ### hue.js ###
 Provides control functions to control either single lamps, groups of lamps, or all available lamps. Lamps can be toggled (on/off), flashed for a short or long time, and have their color changed. See code for API documentation.
 
+### sample ###
+Sample html page that uses RequireJS, jQuery, jQuery UI to demo basic lamp control options. Not intended to be an exhaustive feature demo. __Note:__ Setup detailed above must be completed in the hue.js file in sample/hue.
 
 &copy; 2013 Bryan Johnson; Licensed MIT.
