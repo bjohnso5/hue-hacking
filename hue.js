@@ -8,6 +8,8 @@
  
 var hue = function($, colors) { 
 	
+	'use strict';
+	
 	/**
 	 * 1. MD5 hash used for the initial authentication connection should be set 
 	 *    as the value of apiKey

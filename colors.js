@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Bryan Johnson; Licensed MIT */
  
 var colors = function () {
-	
+	'use strict';
 	////
 	//	Utility functions for hex parsing and rgb conversion
 	////
