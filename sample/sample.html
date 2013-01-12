@@ -3,18 +3,39 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>hue-hacking basic sample</title>
+		<link rel="stylesheet type="text/css" href="css/color_picker.css" />
 		<link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.9.2.custom.min.css" />
 		<script data-main="main" src="require.js"></script>
 	</head>
-	<body class="ui-widget-content">
-		<input type="button" id="turnOnAll" value="Turn On All" /><br/>
-		<input type="button" id="turnOffAll" value="Turn Off All" /><br/>
-		<input type="button" id="allRed" value="Turn All Red" /><br/>
-		<input type="button" id="allGreen" value="Turn All Green" /><br/>
-		<input type="button" id="allBlue" value="Turn All Blue" /><br/>
-		<input type="button" id="allWhite" value="Turn All White" /><br/>
-		
-		<div id="brightness" style="width: 75%"></div>
-		<label>Brightness: </label><label id="brightnessValue"></id>
+	<body class="jquery-ui ui-widget-content ui-corner-all body">
+		<div style="width: 75%">
+			<h2>Modify all lamps</h2>
+			<div id="allLamps">
+				<button id="turnOnAll">Turn On</button><button id="turnOffAll">Turn Off</button><br/>
+				<button id="allRed">Set Color Red</button><button id="allGreen">Set Color Green</button><button id="allBlue">Set Color Blue</button><br/>
+				<button id="allWhite">Set Color White</button><br/>
+				
+				<div id="brightness" style="width: 75%"></div>
+				<label>Brightness: </label><label id="brightnessValue"></id>
+			</div>
+			
+			<h2>Set all colors</h2>
+			<div id="setAllColors">
+				<div id="red"></div>
+				<div id="green"></div>
+				<div id="blue"></div>
+				<div id="swatch" class="ui-widget-content ui-corner-all"></div>
+			</div>
+			<br/>
+			
+			<h2>Modify single lamps</h2>
+			<div id="singleLamps">
+				<div id="toggle">
+					<input type="checkbox" id="toggle1" value="1" /><label for="toggle1">Toggle #1</label>
+					<input type="checkbox" id="toggle2" value="2" /><label for="toggle2">Toggle #2</label>
+					<input type="checkbox" id="toggle3" value="3" /><label for="toggle3">Toggle #3</label>
+				</div>
+			</div>
+		<div>
 	</body>
 </html>
