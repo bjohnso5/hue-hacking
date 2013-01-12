@@ -1,7 +1,21 @@
+/**
+ * Philips Hue Smart LED helper sample page.
+ * Dependencies:
+ *     - jQuery 1.8.3
+ *     - jQuery UI 1.9.2
+ *     - hue.js
+ * https://github.com/bjohnso5/hue-hacking
+ * Copyright (c) 2013 Bryan Johnson; Licensed MIT */
+ 
 require(["domReady!", "jquery", "jquery-ui", "hue/hue"], function(doc, $, ui, hue) {
+	'use strict';
 	
+	// set transition time to 2 milliseconds
 	hue.setTransitionTime(2);
 	
+	/**
+	 * Updates brightness in response to a change event on the slider.
+	 */
 	function updateBrightness() {
 		var brightness = $('#brightness').slider('value');
 		hue.setAllBrightness(brightness);
@@ -33,6 +47,7 @@ require(["domReady!", "jquery", "jquery-ui", "hue/hue"], function(doc, $, ui, hu
 		hue.setAllColors('FFFFFF');
 	});
 	
+	// init slider
 	$('#brightness').slider({
 		animate: "fast",
 		orientation: "horizontal",
