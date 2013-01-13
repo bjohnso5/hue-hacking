@@ -15,7 +15,8 @@ Be sure to save your hash and the passphrase used to generate it in a safe place
 2. Set the value of the ```` apiKey ```` variable in hue.js to your generated MD5 hash from step 1.
 
 3. Find the IP address of your Hue wireless bridge. This can be gathered in a number of ways, including the
-meethue.com control panel, https://www.meethue.com/en-US/user/preferencessmartbridge, by clicking on the "Show me more" link. See bridge_address.png for an example.
+meethue.com control panel, https://www.meethue.com/en-US/user/preferencessmartbridge, by clicking on the "Show me more" link. See screenshot for an example:
+[screenshot](http://imgur.com/yDhCp)
 
 4. Replace the section of the ```` baseURL ```` variable in hue.js delimted by angle brackets (&lt;bridge IP address>) with the IP address discovered in step 3.
 
