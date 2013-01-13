@@ -15,8 +15,7 @@ Be sure to save your hash and the passphrase used to generate it in a safe place
 2. Set the value of the ```` apiKey ```` variable in hue.js to your generated MD5 hash from step 1.
 
 3. Find the IP address of your Hue wireless bridge. This can be gathered in a number of ways, including the
-meethue.com control panel, https://www.meethue.com/en-US/user/preferencessmartbridge, by clicking on the "Show me more" link. See screenshot for an example:
-![screenshot](http://imgur.com/yDhCp)
+meethue.com control panel, https://www.meethue.com/en-US/user/preferencessmartbridge, by clicking on the "Show me more" link. See [screenshot](http://imgur.com/yDhCp) for an example.
 
 4. Replace the section of the ```` baseURL ```` variable in hue.js delimted by angle brackets (&lt;bridge IP address>) with the IP address discovered in step 3.
 
@@ -32,5 +31,8 @@ Provides control functions to control either single lamps, groups of lamps, or a
 
 ### sample ###
 Sample html page that uses RequireJS, jQuery, jQuery UI to demo basic lamp control options. Not intended to be an exhaustive feature demo. __Note:__ Setup detailed above must be completed in the hue.js file in sample/hue.
+
+### tests ###
+QUnit test suites for colors.js and hue.js. Each test is contained within an html page; simply open the page locally in a browser to run tests. __Note:__ Setup detailed above must be completed in the hue.js file to have tests run.
 
 &copy; 2013 Bryan Johnson; Licensed MIT.
