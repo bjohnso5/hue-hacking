@@ -8,6 +8,8 @@
  
 var hue = function($, colors) { 
 	
+	'use strict';
+	
 	/**
 	 * 1. MD5 hash used for the initial authentication connection should be set 
 	 *    as the value of apiKey
@@ -23,12 +25,12 @@ var hue = function($, colors) {
 		baseApiUrl = baseUrl + '/' + apiKey,
 		lastResult = null,
 		numberOfLamps = 3, // set to the # of lamps included in the starter kit, update if you've connected additional bulbs
-		offState = { on: false },
-		onState = { on: true },
+		offState = {on: false},
+		onState = {on: true},
 		shortFlashType = 'select',
 		longFlashType = 'lselect',
-		shortFlashState = { alert: shortFlashType },
-		longFlashState = { alert: longFlashType },
+		shortFlashState = {alert: shortFlashType },
+		longFlashState = {alert: longFlashType },
 		transitionTime = null;
 	
 	/**
@@ -49,8 +51,9 @@ var hue = function($, colors) {
 	 * provided JSON data.
 	 *
 	 * @param {String} url The URL to send the PUT request to.
-	 * @param {function} callback The function to invoke on a successful response.
+	 * @param {Function} callback The function to invoke on a successful response.
 	 * @param {Object} data The JSON data.
+	 * @return {Object} The JSON data.
 	 */
 	var putJSON = function(url, callback, data) {
 		var config = {
@@ -62,6 +65,7 @@ var hue = function($, colors) {
 			data: JSON.stringify(data)
 		};
 		$.ajax(config);
+		return data;
 	};
 	
 	/**
@@ -69,37 +73,46 @@ var hue = function($, colors) {
 	 * bridge-administered resource.
 	 *
 	 * @param {String} destination URL to send HTTP GET request to.
-	 * @param {function} success Callback function to invoke on successful response.
+	 * @param {Function} success Callback function to invoke on successful response.
+	 * @return {Object} JSON bulb configuration data.
 	 */
 	var get = function(destination, success) {
 		var callback = success || null;
 		callback = null === callback ? apiSuccess : success;
-		$.getJSON(destination, success);
+		
+		var stateData= null;
+		$.ajaxSetup({async: false});
+		$.getJSON(destination, function(data) {
+			stateData = data;
+		});
+		return stateData;
 	};
 	
 	/**
 	 * Convenience function used to initiate an HTTP PUT request to modify 
 	 * state.
 	 *
-	 * @param {number} lampIndex 1-based index of the Hue lamp to modify.
+	 * @param {Number} lampIndex 1-based index of the Hue lamp to modify.
 	 * @param {String} data String containing the JSON state object to commit to the lamp.
-	 * @param {function} success Callback function to invoke on successful response.
+	 * @param {Function} success Callback function to invoke on successful response.
+	 * @return {Object} JSON bulb state data.
 	 */
 	var put = function(lampIndex, data, success) {
 		var callback = success || null;
 		callback = null === callback ? apiSuccess : success;
-		putJSON(buildStateURL(lampIndex), callback, data);
+		return putJSON(buildStateURL(lampIndex), callback, data);
 	};
 	
 	/**
 	 * Convenience function used to initiate an HTTP PUT request to modify state of a group of lamps.
 	 *
-	 * @param {number} Index of the lamp group to modify
+	 * @param {Number} Index of the lamp group to modify
 	 * @param {Object} Object containing desired lamp state
+	 * @return {Object} JSON bulb group state data.
 	 */
-	var putGroupAction = function(groupIndex /* {number} */, action /* String */) {
+	var putGroupAction = function(groupIndex /* {Number} */, action /* String */) {
 		var callback = apiSuccess;
-		putJSON(buildGroupActionURL(groupIndex), callback, action);
+		return putJSON(buildGroupActionURL(groupIndex), callback, action);
 	};
 	
 	/**
@@ -107,7 +120,8 @@ var hue = function($, colors) {
 	 * of all connected Hue lamps.
 	 *
 	 * @param {String} data String containing the JSON state object to commit to the lamps.
-	 * @param {function} success Callback function to invoke on successful response.
+	 * @param {Function} success Callback function to invoke on successful response.
+	 * @return {Object} JSON object containing state to apply to lamp.
 	 */
 	var putAll = function(data, success) {
 		var callback = success || null;
@@ -116,25 +130,38 @@ var hue = function($, colors) {
 		for(var i = 0; i < numberOfLamps; ++i) {
 			putJSON(buildStateURL(i+1), callback, data);
 		}
+		return data;
 	};
 	
 	/**
 	 * Convenience function used to build a state URL for a provided Hue lamp
 	 * index.
 	 *
-	 * @param {number} lampIndex 1-based index of the Hue lamp.
+	 * @param {Number} lampIndex 1-based index of the Hue lamp.
+	 * @return {String} URL to put state to a lamp.
 	 */
-	var buildStateURL = function(lampIndex /* number */) {
+	var buildStateURL = function(lampIndex /* Number */) {
 		return baseApiUrl + '/lights/' + lampIndex + '/state';
+	};
+	
+	/**
+	 * Convenience function used to build a URL to query a lamp's status.
+	 *
+	 * @param {Number} lampIndex 1-based index of the Hue lamp.
+	 * @return {String} URL to query a specific lamp.
+	 */
+	var buildLampQueryURL = function(lampIndex /* Number */) {
+		return baseApiUrl + '/lights/' + lampIndex;
 	};
 	
 	/**
 	 * Convenience function used to build a state URL for a provided Hue lamp
 	 * group.
 	 *
-	 * @param {number} groupIndex 0-based index of the lamp group.
+	 * @param {Number} groupIndex 0-based index of the lamp group.
+	 * @return {String} URL to trigger a group action.
 	 */
-	var buildGroupActionURL = function(groupIndex /* {number} */) {
+	var buildGroupActionURL = function(groupIndex /* {Number} */) {
 		return baseApiUrl + '/groups/' + groupIndex + '/action';
 	};
 	
@@ -143,9 +170,10 @@ var hue = function($, colors) {
 	 * If the transitionTime property has been set, it is also included in the
 	 * JSON object.
 	 *
-	 * @param {Array{number}} CIE 1931 X,Y color coordinates.
+	 * @param {Number[]} CIE 1931 X,Y color coordinates.
+	 * @return {Object} State object containing CIE X,Y coordinates.
 	 */
-	var getXYState = function(xyCoords /* Array<number> */) {
+	var buildXYState = function(xyCoords /* Number[] */) {
 		var stateObj = { xy: xyCoords };
 		
 		if(typeof(transitionTime) === 'number' ) {
@@ -156,13 +184,25 @@ var hue = function($, colors) {
 	};
 	
 	/**
+	 * Returns the brightness of the lamp at lampIndex.
+	 *
+	 * @param {Number} lampIndex 1-based index of the lamp to query.
+	 * @return {Number} Brightness of the lamp at lampIndex. 0 - 255.
+	 */
+	var getBrightness = function(lampIndex /* Number */) {
+		var lampState = get(buildLampQueryURL(lampIndex));
+		return lampState.state.bri;
+	};
+	
+	/**
 	 * Builds a JSON state object used to set the brightness of a Hue lamp to
 	 * the value of the brightness parameter.
 	 *
-	 * @param {number} brightness Integer value between 0 and 254. Note that 0
+	 * @param {Number} brightness Integer value between 0 and 254. Note that 0
 	 * is not equivalent to the lamp's off state.
+	 * @return {Object} JSON object used to set brightness.
 	 */
-	var getBrightnessState = function(brightness) {
+	var buildBrightnessState = function(brightness) {
 		var stateObj = { bri: brightness };
 		return stateObj;
 	};
@@ -171,125 +211,182 @@ var hue = function($, colors) {
 		/** 
 		 * Flash the lamp at lampIndex for a short time. 
 		 *	
-		 * @param lampIndex 1-based index of the Hue lamp to flash.
+		 * @param {Number} lampIndex 1-based index of the Hue lamp to flash.
+		 * @return {Object} JSON object containing lamp state.
 		 */
-		flash: function(lampIndex /* number */) {
-			put(lampIndex, shortFlashState);
+		flash: function(lampIndex /* Number */) {
+			return put(lampIndex, shortFlashState);
 		},
 		/** 
 		 * Flash all connected lamps for a short time.
+		 *
+		 * @return {Object} JSON object containing lamp state.
 		 */
 		flashAll: function() {
-			putAll(shortFlashState);
+			return putAll(shortFlashState);
 		},
 		/** 
 		 * Flash the lamp at lampIndex for a long time.
 		 *
-		 * @param lampIndex 1-based index of the Hue lamp to flash.
+		 * @param {Number} lampIndex 1-based index of the Hue lamp to flash.
+		 * @return {Object} JSON object containing lamp state.
 		 */
-		longFlash: function(lampIndex /* number */) {
-			put(lampIndex, longFlashState);
+		longFlash: function(lampIndex /* Number */) {
+			return put(lampIndex, longFlashState);
 		},
 		/** 
 		 * Flash all connected lamps for a long time.
+		 *
+		 * @return {Object} JSON object containing lamp state.
 		 */
 		longFlashAll: function() {
-			putAll(longFlashState);
+			return putAll(longFlashState);
 		},
 		/** 
 		 * Set the lamp at lampIndex to the approximate CIE x,y equivalent of 
 		 * the provided hex color.
 		 *
-		 * @param lampIndex 1-based index of the Hue lamp to colorize.
-		 * @param color String representing a hexadecimal color value.
+		 * @param {Number} lampIndex 1-based index of the Hue lamp to colorize.
+		 * @param {String} color String representing a hexadecimal color value.
+		 * @return {Object} JSON object containing lamp state.
 		 */
-		setColor: function(lampIndex /* number */, color /* String */) {
-			var state = getXYState(colors.getCIEColor(color));
-			put(lampIndex, state);
+		setColor: function(lampIndex /* Number */, color /* String */) {
+			var state = buildXYState(colors.getCIEColor(color));
+			return put(lampIndex, state);
 		},
 		/**
 		 * Sets all connected lamps to the approximate CIE x,y equivalent of 
 		 * the provided hex color.
 		 *
-		 * @param color String representing a hexadecimal color value.
+		 * @param {String} color String representing a hexadecimal color value.
+		 * @return {Object} JSON object containing lamp state.
 		 */
 		setAllColors: function(color /* String */) {
-			var state = getXYState(colors.getCIEColor(color));
-			putGroupAction(0, state); // not as fluid as a simple for loop. setting group state seems to react slower than lamp-by-lamp.
-			//putAll(state);
+			var state = buildXYState(colors.getCIEColor(color));
+			return putGroupAction(0, state);
 		},
 		/**
 		 * Turn off the lamp at lampIndex.
 		 *
-		 * @param lampIndex 1-based index of the Hue lamp to turn off.
+		 * @param {Number} lampIndex 1-based index of the Hue lamp to turn off.
+		 * @return {Object} JSON object containing lamp state.
 		 */
-		turnOff: function(lampIndex /* number */) {
-			put(lampIndex, offState);
+		turnOff: function(lampIndex /* Number */) {
+			return put(lampIndex, offState);
 		},
 		/** 
 		 * Turn on the lamp at lampIndex.
 		 *
-		 * @param lampIndex 1-based index of the Hue lamp to turn on.
+		 * @param {Number} lampIndex 1-based index of the Hue lamp to turn on.
+		 * @return {Object} JSON object containing lamp state.
 		 */
-		turnOn: function(lampIndex /* number */) {
-			put(lampIndex, onState);
+		turnOn: function(lampIndex /* Number */) {
+			return put(lampIndex, onState);
 		},
 		/** 
 		 * Turn off all connected lamps.
+		 *
+		 * @return {Object} JSON object containing lamp state.
 		 */
 		turnOffAll: function() {
-			putGroupAction(0, offState);
-			//putAll(offState);
+			return putGroupAction(0, offState);
 		},
 		/** 
 		 * Turn on all connected lamps.
+		 *
+		 * @return {Object} JSON object containing lamp state.
 		 */
 		turnOnAll: function() {
-			putGroupAction(0, onState);
-			//putAll(onState);
+			return putGroupAction(0, onState);
 		},
 		/**
 		 * Set the brightness of the lamp at lampIndex.
 		 *
-		 * @param {number} lampIndex 1-based index of the Hue lamp to modify.
-		 * @param {number} brightness Integer value between 0 and 254.
+		 * @param {Number} lampIndex 1-based index of the Hue lamp to modify.
+		 * @param {Number} brightness Integer value between 0 and 254.
+		 * @return {Object} JSON object containing lamp state.
 		 */
-		setBrightness: function(lampIndex /* number */, brightness /* number */) {
-			var state = getBrightnessState(brightness);
-			put(lampIndex, state);
+		setBrightness: function(lampIndex /* Number */, brightness /* Number */) {
+			var state = buildBrightnessState(brightness);
+			return put(lampIndex, state);
 		},
 		/**
 		 * Set the brightness of all connected lamps.
 		 *
-		 * @param {number} brightness Integer value between 0 and 254.
+		 * @param {Number} brightness Integer value between 0 and 254.
+		 * @return {Object} JSON object containing all lamp state.
 		 */
-		setAllBrightness: function(brightness /* number */) {
-			var state = getBrightnessState(brightness);
-			putGroupAction(0, state);
-			//putAll(state);
+		setAllBrightness: function(brightness /* Number */) {
+			var state = buildBrightnessState(brightness);
+			return putGroupAction(0, state);
 		},
 		/**
 		 * Set the brightness of an indexed group of lamps.
 		 *
-		 * @param {number} groupIndex 0-based lamp group index.		 
-		 * @param {number} brightness Integer value between 0 and 254.
+		 * @param {Number} groupIndex 0-based lamp group index.		 
+		 * @param {Number} brightness Integer value between 0 and 254.
+		 * @return {Object} JSON object containing group state.
 		 */
-		setGroupBrightness: function(groupIndex /* number */, brightness /* number */) {
-			var state = getBrightnessState(brightness);
-			putGroupAction(groupIndex, brightness);
+		setGroupBrightness: function(groupIndex /* Number */, brightness /* Number */) {
+			var state = buildBrightnessState(brightness);
+			return putGroupAction(groupIndex, brightness);
 		},
-		/** 
-		 * Return the json data from the last HTTP request to the Hue bridge.
-		 *
-		 * @return {String} JSON response from the Hue bridge for the last HTTP request.
+		/**
+		 * Dim the lamp at lampIndex by decrement.
+		 * 
+		 * @param {Number} lampIndex 1-based lamp index.
+		 * @param {Number} [decrement] Amount to decrement brightness by (between 0 and 255).
+		 * @return {Object} JSON object containing lamp state.
 		 */
-		getLastResult: function() {
-			return lastResult;
+		dim: function(lampIndex /* Number */, decrement /* Number */) {
+			decrement = decrement || 10; // default to 10 if decrement not provided.
+			var currentBrightness = getBrightness(lampIndex);
+			var newBrightness = (currentBrightness - decrement > 0) ? currentBrightness - decrement : 0;
+			return this.setBrightness(lampIndex, newBrightness);
+		},
+		/**
+		 * Dim all lamps by decrement.
+		 * 
+		 * @param {Number} [decrement] Amount to decrement brightness by (between 0 and 255).
+		 * @return {Object[]} JSON objects containing lamp states.
+		 */
+		dimAll: function(decrement /* Number */) {
+			var states = [];
+			for(var i = 0; i < numberOfLamps; ++i ) {
+				states[i] = this.dim(i + 1, decrement);
+			}
+			return states;
+		},
+		/**
+		 * Raise the lamp at lampIndex by increment.
+		 *
+		 * @param {Number} lampIndex 1-based lamp index.
+		 * @param {Number} [increment] Amount to increment brightness by (between 0 and 255).
+		 * @return {Object} JSON object containing lamp state.
+		 */
+		raise: function(lampIndex /* Number */, increment /* Number */) {
+			increment = increment || 10;
+			var currentBrightness = getBrightness(lampIndex);
+			var newBrightness = (currentBrightness + increment < 255) ? currentBrightness + increment : 255;
+			return this.setBrightness(lampIndex, newBrightness);
+		},
+		/**
+		 * Raise all lamps by increment.
+		 *
+		 * @param {Number} [increment] Amount to increment brightness by (between 0 and 255).
+		 * @return {Object[]} JSON objects containing lamp states.
+		 */
+		raiseAll: function(lampIndex /* Number */) {
+			var states = [];
+			for(var i = 0; i < numberOfLamps; ++i) {
+				states[i] = this.raise(i + 1, increment);
+			}
+			return states;
 		},
 		/** 
 		 * Return the value of the configured transitionTime property.
 		 *
-		 * @return {number} Value of the transitionTime property. Null by default if not
+		 * @return {Number} Value of the transitionTime property. Null by default if not
 		 * set.
 		 */
 		getTransitionTime: function() {
@@ -298,16 +395,16 @@ var hue = function($, colors) {
 		/**
 		 * Set the value of the transitionTime property.
 		 *
-		 * @param {number} time Lamp color transition time in approximate milliseconds.
+		 * @param {Number} time Lamp color transition time in approximate milliseconds.
 		 */
-		setTransitionTime: function(time /* number */) {
+		setTransitionTime: function(time /* Number */) {
 			transitionTime = time;
 		}
 	};
 };
 
 if(typeof(define) !== 'undefined' && typeof(define.amd) !== 'undefined') {
-	define(["jquery", "./colors"], hue);
+	define(["../jquery", "./colors"], hue);
 } else {
 	// window.colors is defined by the color.js file; if AMD is not used, it must be included BEFORE hue.js
 	window.hue = hue(window.jQuery, window.colors);
