@@ -10,13 +10,6 @@ var hue = function ($, colors) {
     
     'use strict';
     
-    /**
-     * 1. MD5 hash used for the initial authentication connection should be set 
-     *    as the value of apiKey.
-     * 2. Your Hue bridge's IP address should be substituted for the bridgeIP 
-     *    variable. Alternatively (and probably better practice), you can call 
-     *    setIpAndApiKey() prior to using the hue object.
-     */
     var shortFlashType = 'select',
         longFlashType = 'lselect',
         bridgeIP = '', // use your Hue bridge's IP address here
