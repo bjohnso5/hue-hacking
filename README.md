@@ -15,9 +15,9 @@ Be sure to save your hash and the passphrase used to generate it in a safe place
 2. Find the IP address of your Hue wireless bridge. This can be gathered in a number of ways, including the
 meethue.com control panel, https://www.meethue.com/en-US/user/preferencessmartbridge, by clicking on the "Show me more" link. See [screenshot](http://imgur.com/yDhCp) for an example.
 
-3. Call the setIpAndApiKey function passing in the IP address and the API key value generated and registered with the hub.
+3. Call the setIpAndApiKey() function, passing in the IP address and the API key value generated and registered with the hub.
 
-5. __Optional:__ If you have more than 3 bulbs (the number included in the Hue starter kit), update the value of the ```` numberOfLamps ```` variable in hue.js to match your bulb count.
+5. __Optional:__ If you have more than 3 bulbs (the number included in the Hue starter kit), call the setNumberOfLamps() function, passing in the total number of lamps available, prior to using the lamp control functions.
 
 ## Included Files ##
 

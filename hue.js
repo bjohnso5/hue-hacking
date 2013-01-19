@@ -414,6 +414,16 @@ var hue = function ($, colors) {
             apiKey = key;
             bridgeIP = ip;
             updateURLs();
+        },
+        /**
+         * Set the number of lamps available to control.
+         *
+         * @param {Number} The total number of lamps available to interact with. Default is 3.
+         */
+        setNumberOfLamps: function(numLamps /* Number */) {
+            if(typeof(numLamps) === 'number') {
+                numberOfLamps = numLamps;
+            }
         }
     };
 };
