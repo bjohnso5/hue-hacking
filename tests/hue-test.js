@@ -4,7 +4,7 @@ var hue = hue || window.hue,
     fullBrightness = { bri: 254 };
 
 // set Hue bridge IP address and API key to use for test suite
-hue.setIpAndApiKey('192.168.11.10', '9cf5fd0c39b5845d0b8099e9c0daf2cd');
+hue.setIpAndApiKey('IP address', 'apiKey');
 
 module( "turnOffAll" );
 test("test return data", function() {
