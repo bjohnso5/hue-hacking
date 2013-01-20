@@ -9,6 +9,8 @@
  
 require(["domReady!", "jquery", "jquery-ui", "hue/hue"], function(doc, $, ui, hue) {
 	'use strict';
+    
+    hue.setIpAndApiKey('IP address', 'apiKey');
 	
 	// enable jQuery UI button and button set widgets
 	$('button').button();
