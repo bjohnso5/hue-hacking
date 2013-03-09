@@ -268,7 +268,11 @@ var colors = function () {
                 xy = this.rgbToCIE1931(r, g, b);
             }
             return xy;
-        }
+        }, 
+        hexFullRed:     "FF0000",
+        hexFullGreen:   "00FF00",
+        hexFullBlue:    "0000FF",
+        hexFullWhite:   "FFFFFF"
     };
 };
 
