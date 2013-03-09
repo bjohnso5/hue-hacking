@@ -2,7 +2,7 @@
  * Philips Hue Smart LED helper, exposed as an AMD module.
  * Dependencies:
  *    - jQuery 1.8.3
- *    - color.js (packaged alongside this file)
+ *    - colors.js (packaged alongside this file)
  * https://github.com/bjohnso5/hue-hacking
  * Copyright (c) 2013 Bryan Johnson; Licensed MIT */
  
@@ -23,7 +23,7 @@ var hue = function ($, colors) {
         shortFlashState = { alert: shortFlashType },
         longFlashState = { alert: longFlashType },
         transitionTime = null,
-    
+        
         /**
          * Reconstruct the baseUrl and baseApiUrl members when configuration is updated.
          */
@@ -41,7 +41,7 @@ var hue = function ($, colors) {
         apiSuccess = function(data, successText, jqXHR) {
             lastResult = data;
         },
-    
+        
         /**
          * Convenience function to perform an asynchronous HTTP PUT with the
          * provided JSON data.
@@ -63,7 +63,7 @@ var hue = function ($, colors) {
             $.ajax(options);
             return data;
         },
-    
+        
         /**
          * Convenience function used to query the state of a Hue lamp or other
          * bridge-administered resource.
@@ -105,7 +105,7 @@ var hue = function ($, colors) {
         buildGroupActionURL = function(groupIndex /* {Number} */) {
             return baseApiUrl + '/groups/' + groupIndex + '/action';
         },
-    
+        
         /**
          * Convenience function used to initiate an HTTP PUT request to modify 
          * state.
@@ -120,7 +120,7 @@ var hue = function ($, colors) {
             callback = null === callback ? apiSuccess : success;
             return putJSON(buildStateURL(lampIndex), callback, data);
         },
-    
+        
         /**
          * Convenience function used to initiate an HTTP PUT request to modify state of a group of lamps.
          *
@@ -132,7 +132,7 @@ var hue = function ($, colors) {
             var callback = apiSuccess;
             return putJSON(buildGroupActionURL(groupIndex), callback, action);
         },
-    
+        
         /**
          * Convenience function used to initiate HTTP PUT requests to modify state
          * of all connected Hue lamps.
@@ -150,7 +150,7 @@ var hue = function ($, colors) {
             }
             return data;
         },
-    
+        
         /**
          * Convenience function used to build a URL to query a lamp's status.
          *
@@ -160,7 +160,7 @@ var hue = function ($, colors) {
         buildLampQueryURL = function(lampIndex /* Number */) {
             return baseApiUrl + '/lights/' + lampIndex;
         },
-    
+        
         /** 
          * Builds a JSON state object for the CIE 1931 color coordinates provided.
          * If the transitionTime property has been set, it is also included in the
@@ -178,7 +178,7 @@ var hue = function ($, colors) {
             
             return stateObj;
         },
-    
+        
         /**
          * Returns the brightness of the lamp at lampIndex.
          *
@@ -189,7 +189,7 @@ var hue = function ($, colors) {
             var lampState = get(buildLampQueryURL(lampIndex));
             return lampState.state.bri;
         },
-    
+        
         /**
          * Builds a JSON state object used to set the brightness of a Hue lamp to
          * the value of the brightness parameter.
@@ -202,7 +202,7 @@ var hue = function ($, colors) {
             var stateObj = { bri: brightness };
             return stateObj;
         };
-    
+        
     return {
         /** 
          * Flash the lamp at lampIndex for a short time. 
@@ -337,7 +337,8 @@ var hue = function ($, colors) {
         dim: function(lampIndex /* Number */, decrement /* Number */) {
             decrement = decrement || 10; // default to 10 if decrement not provided.
             var currentBrightness = getBrightness(lampIndex);
-            var newBrightness = (currentBrightness - decrement > 0) ? currentBrightness - decrement : 0;
+            var adjustedBrightness = currentBrightness - decrement;
+            var newBrightness = (adjustedBrightness > 0) ? adjustedBrightness : 0;
             return this.setBrightness(lampIndex, newBrightness);
         },
         /**
@@ -354,28 +355,29 @@ var hue = function ($, colors) {
             return states;
         },
         /**
-         * Raise the lamp at lampIndex by increment.
+         * Brighten the lamp at lampIndex by increment.
          *
          * @param {Number} lampIndex 1-based lamp index.
          * @param {Number} [increment] Amount to increment brightness by (between 0 and 255).
          * @return {Object} JSON object containing lamp state.
          */
-        raise: function(lampIndex /* Number */, increment /* Number */) {
+        brighten: function(lampIndex /* Number */, increment /* Number */) {
             increment = increment || 10;
             var currentBrightness = getBrightness(lampIndex);
-            var newBrightness = (currentBrightness + increment < 255) ? currentBrightness + increment : 254;
+            var adjustedBrightness = currentBrightness + increment;
+            var newBrightness = (adjustedBrightness< 255) ? adjustedBrightness : 254;
             return this.setBrightness(lampIndex, newBrightness);
         },
         /**
-         * Raise all lamps by increment.
+         * Brighten all lamps by increment.
          *
          * @param {Number} [increment] Amount to increment brightness by (between 0 and 255).
          * @return {Object[]} JSON objects containing lamp states.
          */
-        raiseAll: function(lampIndex /* Number */, increment /* Number */) {
+        brightenAll: function(increment /* Number */) {
             var states = [];
             for(var i = 0; i < numberOfLamps; ++i) {
-                states[i] = this.raise(i + 1, increment);
+                states[i] = this.brighten(i + 1, increment);
             }
             return states;
         },
@@ -424,6 +426,6 @@ var hue = function ($, colors) {
 if(typeof(define) !== 'undefined' && typeof(define.amd) !== 'undefined') {
     define(["../jquery", "./colors"], hue);
 } else {
-    // window.colors is defined by the color.js file; if AMD is not used, it must be included BEFORE hue.js
+    // window.colors is defined by the colors.js file; if AMD is not used, it must be included BEFORE hue.js
     window.hue = hue(window.jQuery, window.colors);
 }
