@@ -1,0 +1,22 @@
+{
+  "name": "hue",
+  "version": "0.0.1",
+  "description": "Philips Hue LED light bulb control library, written in Javascript",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "keywords": [
+    "javascript",
+    "hue"
+  ],
+  "author": "Bryan Johnson",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-qunit": "~0.2.2",
+    "grunt-contrib-watch": "~0.4.4",
+    "grunt-contrib-concat": "~0.3.0"
+  }
+}
