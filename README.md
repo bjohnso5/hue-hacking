@@ -33,6 +33,6 @@ Provides control functions to control either single lamps, groups of lamps, or a
 QUnit test suites for colors.js and hue.js. Each test is contained within an html page; simply open the page locally in a browser to run tests. __Note:__ Setup detailed above must be completed in the hue.js file to have tests run.
 
 ### Gruntfile.js & package.json ###
-NPM & Grunt configuration for easy build and minification. Requires [Node.js + NPM](http://nodejs.org/) and [Grunt](http://gruntjs.com/). Running `grunt` or `grunt default` will lint, test (via qunit), concat and minify colors.js and hue.js for distribution.
+NPM & Grunt configuration for easy build and minification. Requires [Node.js + NPM](http://nodejs.org/) and [Grunt](http://gruntjs.com/). Running `grunt` or `grunt default` will lint, test (via qunit), concat and minify colors.js and hue.js for distribution. Running `grunt test` will lint and test without building.
 
 &copy; 2013 Bryan Johnson; Licensed MIT.
