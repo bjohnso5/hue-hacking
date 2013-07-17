@@ -9,6 +9,8 @@ _Initial concept and startup work inspired by [Ross McKillop's post](http://rsmc
 ## Getting Started ##
 Once you've followed the instructions with your Hue starter kit and you have your lamps working through the web interface or smartphone app, it's time to configure your copy of hue.js.
 
+For a full breakdown of what the Philips Hue API/SDK offers, check out the [official developer site](http://developers.meethue.com/). Full details about how to register a new 'user' with the wireless bridge can be found at the SDK [getting started page](http://developers.meethue.com/gettingstarted.html).
+
 1. Generate and save your MD5 hash (any [MD5 generator](http://www.miraclesalad.com/webtools/md5.php) will do).
 Be sure to save your hash and the passphrase used to generate it in a safe place.
 
@@ -21,16 +23,16 @@ meethue.com control panel, https://www.meethue.com/en-US/user/preferencessmartbr
 
 ## Included Files ##
 
-### colors.js ###
+### src/colors.js ###
 Provides convenience functions to convert between CSS-style hex color values, their corresponding RGB color values, and the CIE 1931 X,Y color coordinates supported by the Hue lamp system.
 
-### hue.js ###
+### src/hue.js ###
 Provides control functions to control either single lamps, groups of lamps, or all available lamps. Lamps can be toggled (on/off), flashed for a short or long time, and have their color changed. See code for API documentation.
 
-### sample ###
-Sample html page that uses RequireJS, jQuery, jQuery UI to demo basic lamp control options. Not intended to be an exhaustive feature demo. __Note:__ Setup detailed above must be completed in the hue.js file in sample/hue.
-
-### tests ###
+### tests/** ###
 QUnit test suites for colors.js and hue.js. Each test is contained within an html page; simply open the page locally in a browser to run tests. __Note:__ Setup detailed above must be completed in the hue.js file to have tests run.
+
+### Gruntfile.js & package.json ###
+NPM & Grunt configuration for easy build and minification. Requires [Node.js + NPM](http://nodejs.org/) and [Grunt](http://gruntjs.com/). Running `grunt` or `grunt default` will lint, test (via qunit), concat and minify colors.js and hue.js for distribution.
 
 &copy; 2013 Bryan Johnson; Licensed MIT.
