@@ -1,6 +1,11 @@
 # Example image
 bridge_address.png
 
+# Discovered Bridge IP address
+.discovered-ip
+.api-key
+test/hue-test.js
+
 # Sublime Text project files
 *.sublime-project
 *.sublime-workspace
