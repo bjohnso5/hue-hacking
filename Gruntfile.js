@@ -65,7 +65,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('test', ['preprocess', 'jshint', 'qunit']);
 	
 	// test, concat and uglify for distribution
-	grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
+	grunt.registerTask('default', ['preprocess', 'jshint', 'qunit', 'concat', 'uglify']);
 
 	grunt.registerTask('getBridgeIP', 'Get connected Hue bridge IP via upnp', function() {
 		this.async();
