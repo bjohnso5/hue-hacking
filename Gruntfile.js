@@ -62,7 +62,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	
 	// test-only task
-	grunt.registerTask('test', ['jshint', 'qunit']);
+	grunt.registerTask('test', ['preprocess', 'jshint', 'qunit']);
 	
 	// test, concat and uglify for distribution
 	grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
@@ -86,6 +86,6 @@ module.exports = function(grunt) {
 	grunt.registerTask('init', 'Initialize library with api key for tests', function(apiKey) {
 		grunt.log.writeln('Initializing with api key: ' + apiKey);
 		grunt.config.set('config.apiKey', apiKey);
-		grunt.task.run(['setAPIKey:' + apiKey, 'getBridgeIP', 'preprocess']);
+		grunt.task.run(['setAPIKey:' + apiKey, 'getBridgeIP']);
 	});
 };
