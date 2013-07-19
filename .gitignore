@@ -1,3 +1,37 @@
-# Example image #
-#################
+# Example image
 bridge_address.png
+
+# Sublime Text project files
+*.sublime-project
+*.sublime-workspace
+
+# Distributable folder
+dist
+
+# Node.js ignore: https://github.com/github/gitignore/blob/master/Node.gitignore
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+
+pids
+logs
+results
+
+npm-debug.log
+node_modules
+
+# Windows ignore: https://github.com/github/gitignore/blob/master/Global/Windows.gitignore
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
