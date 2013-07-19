@@ -3,8 +3,10 @@ bridge_address.png
 
 # Discovered Bridge IP address
 .discovered-ip
+# saved API key
 .api-key
-test/hue-test.js
+# Post-processed hue-test file
+**/hue-test.js
 
 # Sublime Text project files
 *.sublime-project
