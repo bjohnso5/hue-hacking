@@ -5,6 +5,8 @@ bridge_address.png
 .discovered-ip
 # saved API key
 .api-key
+# Lights discovered
+.lights
 # Post-processed hue-test file
 **/hue-test.js
 
