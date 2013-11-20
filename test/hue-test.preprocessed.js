@@ -3,6 +3,7 @@ var hue = hue || window.hue,
     offState = { on: false },
     fullBrightness = { bri: 254 },
     IPAddress = '/* @echo IPAddress */' || '127.0.0.1',
+    connectedLampCount = /* @echo connectedLampCount */ || 3,
     APIKey = '/* @echo APIKey */' || 'API key';
 
 // set Hue bridge IP address and API key to use for test suite
@@ -22,7 +23,7 @@ test("test return data", function() {
 
 module( "dim" );
 test("test return data", function() {
-    var data = hue.dim(3);
+    var data = hue.dim(connectedLampCount);
     deepEqual(data, { bri: 244 });
 });
 

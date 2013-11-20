@@ -1,5 +1,13 @@
 module.exports = function(grunt) {
 
+	function countLamps(jsonObj) {
+		var i = 0;
+		for(var prop in jsonObj) {
+			i++;
+		}
+		return i;
+	}
+
 	// Project config
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
@@ -28,6 +36,7 @@ module.exports = function(grunt) {
 		jshint: {
 			files: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
 			options: {
+				ignores: ['**/*.preprocessed.js'],
 				globals: {
 					jQuery: true,
 					console: true,
@@ -46,8 +55,9 @@ module.exports = function(grunt) {
 				dest: 'test/hue-test.js',
 				options: {
 					context: {
-						IPAddress: grunt.file.readJSON('.discovered-ip').internalipaddress,
-						APIKey: grunt.file.isFile('.api-key') ? grunt.file.readJSON('.api-key').apiKey : ""
+						IPAddress: grunt.file.isFile('.discovered-ip') ? grunt.file.readJSON('.discovered-ip').internalipaddress : "",
+						APIKey: grunt.file.isFile('.api-key') ? grunt.file.readJSON('.api-key').apiKey : "",
+						connectedLampCount: grunt.file.isFile('.lights') ? countLamps(grunt.file.readJSON('.lights')) : 3
 					}
 				}
 			}
@@ -67,25 +77,50 @@ module.exports = function(grunt) {
 	// test, concat and uglify for distribution
 	grunt.registerTask('default', ['preprocess', 'jshint', 'qunit', 'concat', 'uglify']);
 
-	grunt.registerTask('getBridgeIP', 'Get connected Hue bridge IP via upnp', function() {
-		this.async();
-		var needle = require('needle');
-		needle.get('http://www.meethue.com/api/nupnp', function(error, response, body) {
-			var responseJson = JSON.parse(body);
-			grunt.log.writeln("Found IP: " + responseJson[0].internalipaddress);
-			grunt.file.write('.discovered-ip', JSON.stringify(responseJson[0]));
-		});
-	});
-
 	grunt.registerTask('setAPIKey', 'Set API key for test run', function(apiKey) {
 		grunt.log.writeln("Saved api key: " + apiKey);
 		grunt.file.write('.api-key', JSON.stringify({ "apiKey": apiKey }));
+	});
+
+	grunt.registerTask('getBridgeIP', 'Get connected Hue bridge IP via upnp', function() {
+		var done = this.async();
+		var needle = require('needle');
+		needle.get('http://www.meethue.com/api/nupnp', function(error, response, body) {
+			var responseJson = JSON.parse(body);
+			var ip = responseJson[0].internalipaddress;
+			grunt.log.writeln("Found IP: " + ip);
+			grunt.config.set('config.bridgeIP', ip);
+			grunt.file.write('.discovered-ip', JSON.stringify(responseJson[0]));
+			done();
+		});
+	});
+
+	grunt.registerTask('discoverLampCount', 'Set number of lamps from a query of the Hue API', function() {
+		var ip = grunt.file.isFile('.discovered-ip') ? grunt.file.readJSON('.discovered-ip').internalipaddress : "",
+			apiKey = grunt.file.isFile('.api-key') ? grunt.file.readJSON('.api-key').apiKey : "",
+			url = 'http://' + ip + '/api/' + apiKey + '/lights',
+			done = this.async();
+		grunt.log.writeln('URL: ' + url);
+		var needle = require('needle');
+		var jsonObj = null;
+		needle.get(url, function(error, response, body) {
+			jsonObj = JSON.parse(body);
+			grunt.log.writeln("Found " + countLamps(jsonObj) + " connected lamps");
+			grunt.file.write('.lights', JSON.stringify(jsonObj));
+			done();
+		});
 	});
 
 	// init library
 	grunt.registerTask('init', 'Initialize library with api key for tests', function(apiKey) {
 		grunt.log.writeln('Initializing with api key: ' + apiKey);
 		grunt.config.set('config.apiKey', apiKey);
-		grunt.task.run(['setAPIKey:' + apiKey, 'getBridgeIP']);
+		var queuedTasks = [
+			'setAPIKey:' + apiKey, 
+			'getBridgeIP', 
+			'discoverLampCount'
+		];
+		grunt.log.writeln("Queued tasks: " + queuedTasks);
+		grunt.task.run(queuedTasks);
 	});
 };
