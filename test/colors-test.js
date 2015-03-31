@@ -35,3 +35,15 @@ test("known parameter returns known coordinates (full green)", function() {
 test("known parameter returns known coordinates (full blue)", function() {
 	deepEqual(colors.hexToCIE1931(hexRGBBlue), cieRGBBlue);
 });
+
+// The resulting hex values from CIE1931 => RGB color spaces are imprecise, but close.
+module( "CIE1931ToHex" );
+test("known parameter returns known coordinates (full red)", function() {
+	deepEqual(colors.CIE1931ToHex.apply(null, cieRGBRed), 'ff6c22');
+});
+test("known parameter returns known coordinates (full green)", function() {
+	deepEqual(colors.CIE1931ToHex.apply(null, cieRGBGreen), 'fffe50');
+});
+test("known parameter returns known coordinates (full blue)", function() {
+	deepEqual(colors.CIE1931ToHex.apply(null, cieRGBBlue), '3639ff');
+});

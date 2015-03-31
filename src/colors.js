@@ -68,13 +68,27 @@ var colors = function () {
         return rgb;
     },
 
+    /**
+     * Converts an RGB component to a hex string.
+     *
+     * @param {Number} RGB value, integer between 0 and 255.
+     * @returns {String} Hex value string (e.g. FF)
+     */
     componentToHex = function (c) {
         var hex = c.toString(16);
         return hex.length == 1 ? '0' + hex : hex;
     },
 
+    /**
+     * Converts RGB color components to a valid hex color string.
+     *
+     * @param {Number} RGB red value, integer between 0 and 255.
+     * @param {Number} RGB green value, integer between 0 and 255.
+     * @param {Number} RGB blue value, integer between 0 and 255.
+     * @returns {String} Hex color string (e.g. FF0000)
+     */
     rgbToHex = function (r, g, b) {
-        return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+        return componentToHex(r) + componentToHex(g) + componentToHex(b);
     },
 
     /**
@@ -174,11 +188,7 @@ var colors = function () {
             closestPoint = pBC;
         }
 
-        // Change the xy value to a value which is within the reach of the lamp.
-        var cx = closestPoint.x,
-            cy = closestPoint.y;
-
-        return new XYPoint(cx, cy);
+        return closestPoint;
     },
 
     /**
@@ -225,7 +235,9 @@ var colors = function () {
             inReachOfLamps = checkPointInLampsReach(xyPoint);
 
         if (!inReachOfLamps) {
-            xyPoint = getClosestPointToPoint(xyPoint);
+            var closestPoint = getClosestPointToPoint(xyPoint);
+            cx = closestPoint.x;
+            cy = closestPoint.y;
         }
 
         return new XYPoint(cx, cy);
@@ -337,7 +349,15 @@ var colors = function () {
             return xy;
         },
 
-        // Converts CIE 1931 x and y coordinates and brightness value from 0 to 1 to a CSS hex color."""
+        /**
+         * Returns the approximate hexColor represented by the supplied
+         * CIE 1931 x,y coordinates and brightness value.
+         *
+         * @param {Number} X coordinate.
+         * @param {Number} Y coordinate.
+         * @param {Number} brightness value expressed between 0 and 1.
+         * @return {String} hex color string.
+         */
         CIE1931ToHex : function (x, y, bri) {
             if (bri === undefined) {
                 bri = 1;
