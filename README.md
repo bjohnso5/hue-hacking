@@ -1,4 +1,6 @@
-# hue-hacking: Hue Control Library #
+# This repository is now deprecated in favour of the newer development in [hue-hacking-npm](https://github.com/bjohnso5/hue-hacking-npm)
+
+## hue-hacking: Hue Control Library #
 ***
 hue-hacking is a javascript library designed to control the Philips Hue smart LED bulb system.
 
